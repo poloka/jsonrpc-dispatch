@@ -10,7 +10,7 @@ const JSONRPCVersion = '2.0';
  * See also:
  * [0] JSONRPC - http://json-rpc.org/wiki/specification
  */
-class JSONRPC {
+class JSONRPC1 {
   /**
    * Initializes a JSONRPC instance..
    * @param {object} methods - The JSONRPC methods to handle.
@@ -127,4 +127,4 @@ class JSONRPC {
   }
 }
 
-export default Object.freeze(JSONRPC);
+export default Object.freeze(JSONRPC1);

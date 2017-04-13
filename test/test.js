@@ -1,15 +1,15 @@
 /* global describe, it */
 import { expect } from 'chai';
-import JSONRPC from '../src/index';
+import JSONRPC1 from '../src/index';
 import ERRORS from '../src/errors';
 
 
-describe('JSONRPC', () => {
-  it('should not be extensible', () => expect(JSONRPC).to.not.be.extensible);
+describe('JSONRPC1', () => {
+  it('should not be extensible', () => expect(JSONRPC1).to.not.be.extensible);
 
   describe('#constructor', () => {
     const methods = { foo() {} };
-    const jsonrpc = new JSONRPC(methods);
+    const jsonrpc = new JSONRPC1(methods);
 
     it('sets the version', () => expect(jsonrpc.version).to.equal('2.0'));
     it('sets the methods', () => expect(jsonrpc.methods).to.equal(methods));
@@ -17,7 +17,7 @@ describe('JSONRPC', () => {
   });
 
   describe('#notification', () => {
-    const jsonrpc = new JSONRPC({});
+    const jsonrpc = new JSONRPC1({});
     const notification = jsonrpc.notification('foo', ['hi']);
     it('has an id', () => expect(notification.id).to.equal(undefined));
     it('has a jsonrpc version', () => expect(notification.jsonrpc).to.equal(jsonrpc.version));
@@ -29,7 +29,7 @@ describe('JSONRPC', () => {
   });
 
   describe('#request', () => {
-    const jsonrpc = new JSONRPC({});
+    const jsonrpc = new JSONRPC1({});
     const callback = () => {};
     const request = jsonrpc.request('foo', ['hi'], callback);
 
@@ -51,13 +51,13 @@ describe('JSONRPC', () => {
   });
 
   describe('#handleRequest', () => {
-    const jsonrpc = new JSONRPC({
+    const jsonrpc = new JSONRPC1({
       add(x, y, next) { next(null, x + y); },
       echoContext(next) { next(null, this); },
     });
 
     it('responds with JSONRPC response', (done) => {
-      const request = new JSONRPC().request('add', [1, 2]);
+      const request = new JSONRPC1().request('add', [1, 2]);
       const context = {};
       jsonrpc.handleRequest(request, context, (response) => {
         expect(response.result).to.equal(3);
@@ -69,7 +69,7 @@ describe('JSONRPC', () => {
     });
 
     it('uses given context to call request handler', (done) => {
-      const request = new JSONRPC().request('echoContext');
+      const request = new JSONRPC1().request('echoContext');
       const context = { test: 'context' };
       jsonrpc.handleRequest(request, context, (response) => {
         expect(response.result).to.equal(context);
@@ -78,7 +78,7 @@ describe('JSONRPC', () => {
     });
 
     it('handles unknown requests with a method not found error', (done) => {
-      const request = new JSONRPC().request('doesntExist', () => {});
+      const request = new JSONRPC1().request('doesntExist', () => {});
       jsonrpc.handleRequest(request, {}, (response) => {
         expect(response.result).to.equal(undefined);
         expect(response.id).to.equal(request.id);
@@ -90,9 +90,9 @@ describe('JSONRPC', () => {
 
   describe('#handleNotification', () => {
     it('executes the notification handler', (done) => {
-      const request = new JSONRPC().notification('foo', ['bar', 'baz']);
+      const request = new JSONRPC1().notification('foo', ['bar', 'baz']);
       const context = {};
-      const jsonrpc = new JSONRPC({
+      const jsonrpc = new JSONRPC1({
         foo(x, y, next) {
           expect(x).to.equal('bar');
           expect(y).to.equal('baz');
@@ -106,14 +106,14 @@ describe('JSONRPC', () => {
     });
 
     it('handles unknown notifications silently', () => {
-      const request = new JSONRPC().notification('foo');
-      const jsonrpc = new JSONRPC({});
+      const request = new JSONRPC1().notification('foo');
+      const jsonrpc = new JSONRPC1({});
       jsonrpc.handleNotification(request);
     });
   });
 
   describe('#handleResponse', () => {
-    const jsonrpc = new JSONRPC({});
+    const jsonrpc = new JSONRPC1({});
 
     it('executes the response handler', (done) => {
       const context = { bar: 'baz' };
@@ -146,9 +146,9 @@ describe('JSONRPC', () => {
 
   describe('#handle', () => {
     it('handles notifications', (done) => {
-      const request = new JSONRPC().notification('foo', ['bar', 'baz']);
+      const request = new JSONRPC1().notification('foo', ['bar', 'baz']);
       const context = {};
-      const jsonrpc = new JSONRPC({
+      const jsonrpc = new JSONRPC1({
         foo(x, y, next) {
           expect(x).to.equal('bar');
           expect(y).to.equal('baz');
@@ -162,9 +162,9 @@ describe('JSONRPC', () => {
     });
 
     it('handles requests', (done) => {
-      const request = new JSONRPC().request('add', [1, 2]);
+      const request = new JSONRPC1().request('add', [1, 2]);
       const context = {};
-      const jsonrpc = new JSONRPC({
+      const jsonrpc = new JSONRPC1({
         add(x, y, next) {
           expect(x).to.equal(1);
           expect(y).to.equal(2);
@@ -186,7 +186,7 @@ describe('JSONRPC', () => {
     });
 
     it('handles response', (done) => {
-      const jsonrpc = new JSONRPC({});
+      const jsonrpc = new JSONRPC1({});
       const context = { bar: 'baz' };
       const request = jsonrpc.request('foo', [], function callback(error, result) {
         expect(this).to.equal(context);
